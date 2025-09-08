@@ -147,11 +147,9 @@ if __name__ == "__main__":
         choice = input("Nhập lựa chọn (1, 2 hoặc 3): ")
 
         if choice == "1":
-            play_game()
-            break
+            play_game() 
         elif choice == "2":
             demo_ai_vs_ai()
-            break
         elif choice == "3":
             print("Cảm ơn bạn đã chơi!")
             break
