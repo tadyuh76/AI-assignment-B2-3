@@ -3,13 +3,12 @@ import numpy as np
 
 class TicTacToe(TwoPlayerGame):
     def __init__(self, players):
-        # Khởi tạo bảng 3x3 rỗng (0 = trống, 1 = X, 2 = O)
+        # Khởi tạo bàn cờ 3x3 rỗng (0 = trống, 1 = X, 2 = O)
         self.board = np.zeros((3, 3), dtype=int)
         self.players = players
-        self.current_player = 1  # Player 1 bắt đầu (X)
+        self.current_player = 1  # Player 1 chơi trước (X)
     
     def possible_moves(self):
-        """Trả về danh sách các nước đi có thể (các ô trống)"""
         moves = []
         for i in range(3):
             for j in range(3):
@@ -18,7 +17,6 @@ class TicTacToe(TwoPlayerGame):
         return moves
     
     def make_move(self, move):
-        """Thực hiện nước đi"""
         i, j = move
         self.board[i][j] = self.current_player
     
@@ -28,11 +26,9 @@ class TicTacToe(TwoPlayerGame):
         self.board[i][j] = 0
     
     def lose(self):
-        """Kiểm tra xem người chơi hiện tại có thua không"""
         return self.check_winner() == (3 - self.current_player)
     
     def is_over(self):
-        """Kiểm tra xem trò chơi đã kết thúc chưa"""
         return self.check_winner() != 0 or len(self.possible_moves()) == 0
     
     def check_winner(self):
@@ -74,7 +70,6 @@ class TicTacToe(TwoPlayerGame):
             return 0  # Hòa hoặc chưa kết thúc
     
     def show(self):
-        """Hiển thị bàn cờ"""
         symbols = {0: ' ', 1: 'X', 2: 'O'}
         print("\n   0   1   2")
         print("  -----------")
@@ -88,7 +83,6 @@ class TicTacToe(TwoPlayerGame):
 
 
 def get_human_move(game):
-    """Lấy nước đi từ người chơi"""
     while True:
         try:
             move_str = input("Nhập nước đi của bạn (hàng,cột): ")
@@ -102,7 +96,6 @@ def get_human_move(game):
 
 
 def play_game():
-    """Hàm chính để chơi game"""
     print("=== TIC TAC TOE với Minimax Algorithm ===")
     print("Bạn là X, AI là O")
     print("Nhập tọa độ theo format 'hàng,cột' (0,2)")
@@ -111,13 +104,10 @@ def play_game():
     # Depth = 9 đảm bảo AI chơi hoàn hảo (vì Tic Tac Toe có tối đa 9 nước)
     ai_algo = Negamax(9)
     
-    # Khởi tạo game với Human player và AI player
     game = TicTacToe([Human_Player(get_human_move), AI_Player(ai_algo)])
     
-    # Bắt đầu game
     game.play()
     
-    # Hiển thị kết quả
     winner = game.check_winner()
     if winner == 1:
         print("Chúc mừng! Bạn đã thắng!")
@@ -128,7 +118,6 @@ def play_game():
 
 
 def demo_ai_vs_ai():
-    """Demo AI vs AI để xem thuật toán hoạt động"""
     print("\n=== AI vs AI ===")
     print("Giả lập 2 AI đấu với nhau")
     
@@ -149,7 +138,6 @@ def demo_ai_vs_ai():
 
 
 if __name__ == "__main__":
-    # Menu lựa chọn
     while True:
         print("-------------------------------")
         print("Chọn chế độ chơi:")
