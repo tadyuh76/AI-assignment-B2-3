@@ -222,11 +222,9 @@ def compare_algorithms():
     return results
 
 def solve_with_fixed_initial_state():
-    """Giải bài toán với cùng 1 state đầu cố định cho cả 3 thuật toán"""
     print("GIẢI BÀI TOÁN 8 QUÂN HẬU BẰNG SIMPLEAI")
     print("=" * 60)
     
-    # State đầu cố định để so sánh công bằng (có conflicts)
     initial_state = (0, 1, 2, 3, 4, 5, 6, 7)
     print(f"State đầu cố định cho cả 3 thuật toán: {initial_state}")
     problem_temp = EightQueensProblem(initial_state)
@@ -235,7 +233,6 @@ def solve_with_fixed_initial_state():
     
     results = {}
     
-    # 1. Hill Climbing
     print("=== 1. HILL CLIMBING ===")
     problem1 = EightQueensProblem(initial_state)
     start_time = time.time()
@@ -264,7 +261,6 @@ def solve_with_fixed_initial_state():
     print(f"Thời gian thực hiện: {end_time - start_time:.4f} giây")
     print("-" * 50)
     
-    # 2. Genetic Algorithm
     print("=== 2. GENETIC ALGORITHM ===")
     problem2 = EightQueensProblem(initial_state)
     
@@ -273,7 +269,6 @@ def solve_with_fixed_initial_state():
     generations = 1000
     
     start_time = time.time()
-    # Tạo quần thể ban đầu bao gồm state đầu
     population = [initial_state] + [generate_random_state() for _ in range(population_size - 1)]
     
     best_solution = None
@@ -342,8 +337,7 @@ def solve_with_fixed_initial_state():
     
     print(f"Thời gian thực hiện: {end_time - start_time:.4f} giây")
     print("-" * 50)
-    
-    # 3. Simulated Annealing
+
     print("=== 3. SIMULATED ANNEALING ===")
     problem3 = EightQueensProblem(initial_state)
     start_time = time.time()
@@ -372,7 +366,6 @@ def solve_with_fixed_initial_state():
     print(f"Thời gian thực hiện: {end_time - start_time:.4f} giây")
     print("-" * 50)
     
-    # So sánh kết quả
     print("=== SO SÁNH KẾT QUẢ ===")
     print(f"{'Thuật toán':<20} {'Thành công':<12} {'Conflicts':<10} {'Thời gian (s)':<12}")
     print("-" * 55)
