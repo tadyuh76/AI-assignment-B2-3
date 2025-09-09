@@ -221,12 +221,167 @@ def compare_algorithms():
     
     return results
 
-if __name__ == "__main__":
+def solve_with_fixed_initial_state():
+    """Giải bài toán với cùng 1 state đầu cố định cho cả 3 thuật toán"""
     print("GIẢI BÀI TOÁN 8 QUÂN HẬU BẰNG SIMPLEAI")
     print("=" * 60)
     
-    solve_with_hill_climbing()
-    solve_with_genetic()
-    solve_with_simulated_annealing()
-    compare_algorithms()
+    # State đầu cố định để so sánh công bằng (có conflicts)
+    initial_state = (0, 1, 2, 3, 4, 5, 6, 7)
+    print(f"State đầu cố định cho cả 3 thuật toán: {initial_state}")
+    problem_temp = EightQueensProblem(initial_state)
+    print(f"Số conflicts ban đầu: {problem_temp._conflicts(initial_state)}")
+    print_board(initial_state)
+    
+    results = {}
+    
+    # 1. Hill Climbing
+    print("=== 1. HILL CLIMBING ===")
+    problem1 = EightQueensProblem(initial_state)
+    start_time = time.time()
+    result1 = hill_climbing(problem1)
+    end_time = time.time()
+    
+    if result1:
+        print(f"Tìm thấy nghiệm: {result1.state}")
+        print(f"Số conflicts: {problem1._conflicts(result1.state)}")
+        print_board(result1.state)
+        results['Hill Climbing'] = {
+            'success': problem1._conflicts(result1.state) == 0,
+            'final_state': result1.state,
+            'conflicts': problem1._conflicts(result1.state),
+            'time': end_time - start_time
+        }
+    else:
+        print("Không tìm thấy nghiệm (có thể bị kẹt ở local maximum)")
+        results['Hill Climbing'] = {
+            'success': False,
+            'final_state': None,
+            'conflicts': float('inf'),
+            'time': end_time - start_time
+        }
+    
+    print(f"Thời gian thực hiện: {end_time - start_time:.4f} giây")
+    print("-" * 50)
+    
+    # 2. Genetic Algorithm
+    print("=== 2. GENETIC ALGORITHM ===")
+    problem2 = EightQueensProblem(initial_state)
+    
+    population_size = 100
+    mutation_rate = 0.1
+    generations = 1000
+    
+    start_time = time.time()
+    # Tạo quần thể ban đầu bao gồm state đầu
+    population = [initial_state] + [generate_random_state() for _ in range(population_size - 1)]
+    
+    best_solution = None
+    best_fitness = -1
+    
+    for generation in range(generations):
+        fitness_scores = [problem2.value(individual) for individual in population]
+        
+        max_fitness = max(fitness_scores)
+        if max_fitness > best_fitness:
+            best_fitness = max_fitness
+            best_index = fitness_scores.index(max_fitness)
+            best_solution = population[best_index]
+            
+            if max_fitness == 28:
+                break
+        
+        new_population = []
+        
+        for _ in range(population_size // 2):
+            parent1 = tournament_selection(population, fitness_scores)
+            parent2 = tournament_selection(population, fitness_scores)
+            
+            child1, child2 = crossover(parent1, parent2)
+            
+            if random.random() < mutation_rate:
+                child1 = mutate(child1)
+            if random.random() < mutation_rate:
+                child2 = mutate(child2)
+            
+            new_population.extend([child1, child2])
+        
+        population = new_population
+    
+    end_time = time.time()
+    
+    if best_solution and problem2._conflicts(best_solution) == 0:
+        print(f"Tìm thấy nghiệm: {best_solution}")
+        print(f"Số conflicts: {problem2._conflicts(best_solution)}")
+        print_board(best_solution)
+        results['Genetic Algorithm'] = {
+            'success': True,
+            'final_state': best_solution,
+            'conflicts': problem2._conflicts(best_solution),
+            'time': end_time - start_time
+        }
+    else:
+        print("Không tìm thấy nghiệm hoàn hảo")
+        if best_solution:
+            print(f"Nghiệm tốt nhất: {best_solution}")
+            print(f"Số conflicts: {problem2._conflicts(best_solution)}")
+            print_board(best_solution)
+            results['Genetic Algorithm'] = {
+                'success': False,
+                'final_state': best_solution,
+                'conflicts': problem2._conflicts(best_solution),
+                'time': end_time - start_time
+            }
+        else:
+            results['Genetic Algorithm'] = {
+                'success': False,
+                'final_state': None,
+                'conflicts': float('inf'),
+                'time': end_time - start_time
+            }
+    
+    print(f"Thời gian thực hiện: {end_time - start_time:.4f} giây")
+    print("-" * 50)
+    
+    # 3. Simulated Annealing
+    print("=== 3. SIMULATED ANNEALING ===")
+    problem3 = EightQueensProblem(initial_state)
+    start_time = time.time()
+    result3 = simulated_annealing(problem3, iterations_limit=10000)
+    end_time = time.time()
+    
+    if result3:
+        print(f"Tìm thấy nghiệm: {result3.state}")
+        print(f"Số conflicts: {problem3._conflicts(result3.state)}")
+        print_board(result3.state)
+        results['Simulated Annealing'] = {
+            'success': problem3._conflicts(result3.state) == 0,
+            'final_state': result3.state,
+            'conflicts': problem3._conflicts(result3.state),
+            'time': end_time - start_time
+        }
+    else:
+        print("Không tìm thấy nghiệm")
+        results['Simulated Annealing'] = {
+            'success': False,
+            'final_state': None,
+            'conflicts': float('inf'),
+            'time': end_time - start_time
+        }
+    
+    print(f"Thời gian thực hiện: {end_time - start_time:.4f} giây")
+    print("-" * 50)
+    
+    # So sánh kết quả
+    print("=== SO SÁNH KẾT QUẢ ===")
+    print(f"{'Thuật toán':<20} {'Thành công':<12} {'Conflicts':<10} {'Thời gian (s)':<12}")
+    print("-" * 55)
+    
+    for name, result in results.items():
+        success_str = "✓" if result['success'] else "✗"
+        conflicts = result['conflicts'] if result['conflicts'] != float('inf') else "N/A"
+        print(f"{name:<20} {success_str:<12} {conflicts:<10} {result['time']:<12.4f}")
+
+if __name__ == "__main__":
+    solve_with_fixed_initial_state()
 
