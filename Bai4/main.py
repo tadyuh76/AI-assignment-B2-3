@@ -13,16 +13,16 @@ class TicTacToe(TwoPlayerGame):
         for i in range(3):
             for j in range(3):
                 if self.board[i][j] == 0:
-                    moves.append((i, j))
+                    moves.append(f"{i},{j}")
         return moves
     
     def make_move(self, move):
-        i, j = move
+        i, j = map(int, move.split(','))
         self.board[i][j] = self.current_player
     
     def unmake_move(self, move):
         """Hoàn tác nước đi (cần thiết cho thuật toán Minimax)"""
-        i, j = move
+        i, j = map(int, move.split(','))  # Parse string move
         self.board[i][j] = 0
     
     def lose(self):
@@ -80,31 +80,44 @@ class TicTacToe(TwoPlayerGame):
             print(row)
             print("  -----------")
         print()
-
-
-def get_human_move(game):
-    while True:
-        try:
-            move_str = input("Nhập nước đi của bạn (hàng,cột): ")
-            i, j = map(int, move_str.split(','))
-            if (i, j) in game.possible_moves():
-                return (i, j)
-            else:
-                print("Nước đi không hợp lệ! Vui lòng chọn ô trống.")
-        except:
-            print("Format không đúng! Vui lòng nhập theo format 'hàng,cột' (ví dụ: 1,2)")
+    
+    def ask_player(self, player):
+        self.show()
+        while True:
+            try:
+                move_str = input(f"Player {player} ({'X' if player == 1 else 'O'}), nhập nước đi (hàng,cột): ")
+                
+                # Handle different input formats
+                if ',' in move_str:
+                    i, j = map(int, move_str.split(','))
+                elif len(move_str) == 2 and move_str.isdigit():
+                    i, j = int(move_str[0]), int(move_str[1])
+                else:
+                    parts = move_str.split()
+                    i, j = int(parts[0]), int(parts[1])
+                
+                # Create move string and check if valid
+                move = f"{i},{j}"
+                if move in self.possible_moves():
+                    return move
+                else:
+                    print("Nước đi không hợp lệ! Vui lòng chọn ô trống.")
+                    print("Các nước đi hợp lệ:", self.possible_moves())
+            except:
+                print("Format không đúng! Vui lòng nhập theo format 'hàng,cột' (ví dụ: 1,2)")
+                print("Các nước đi hợp lệ:", self.possible_moves())
 
 
 def play_game():
     print("=== TIC TAC TOE với Minimax Algorithm ===")
     print("Bạn là X, AI là O")
-    print("Nhập tọa độ theo format 'hàng,cột' (0,2)")
+    print("Nhập tọa độ theo format 'hàng,cột'. VD: 0,1")
     
     # Tạo AI player với thuật toán Negamax (tương đương Minimax với Alpha-Beta pruning)
     # Depth = 9 đảm bảo AI chơi hoàn hảo (vì Tic Tac Toe có tối đa 9 nước)
     ai_algo = Negamax(9)
     
-    game = TicTacToe([Human_Player(get_human_move), AI_Player(ai_algo)])
+    game = TicTacToe([Human_Player(), AI_Player(ai_algo)])
     
     game.play()
     
